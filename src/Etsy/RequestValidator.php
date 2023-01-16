@@ -3,111 +3,119 @@ namespace Etsy;
 
 class RequestValidator
 {
-	public static function validateParams($args, $methodInfo)
-	{
-		$result = array('_valid' => array());
-		if (!is_array($methodInfo))
-		{
-			$result['_invalid'][] = 'Method not found';
-			return $result;
-		}
+    public static function validateParams($args, $methodInfo)
+    {
+        $result = array('_valid' => array());
 
-		$methodsParams = $methodInfo['params'];
+        if (!is_array($methodInfo))
+        {
+            $result['_invalid'][] = 'Method not found';
+            return $result;
+        }
 
-		if (preg_match_all('@\/\:(\w+)@', $methodInfo['uri'], $match))
-		{
-			if (isset($args['params']))
-			{
-				foreach ($match[0] as $i => $value)
-				{
-					if (!isset($args['params'][$match[1][$i]]))
-					{
-						$result['_invalid'][] = 'Required parameter "'.$match[1][$i].'" not found';
-					}
-				}
-			} else {
-				$result['_invalid'][] = 'Required parameters not found: ' . implode(', ', $match[1]);
-			}
+        $methodsParams = $methodInfo['params'];
 
-			if (isset($result['_invalid']))
-			{
-				return $result;
-			}
-		}
+        if (preg_match_all('@\/\:(\w+)@', $methodInfo['uri'], $match))
+        {
+            if (isset($args['params']))
+            {
+                foreach ($match[0] as $i => $value)
+                {
+                    if (!isset($args['params'][$match[1][$i]]))
+                    {
+                        $result['_invalid'][] = 'Required parameter "'.$match[1][$i].'" not found';
+                    }
+                }
+            } else {
+                $result['_invalid'][] = 'Required parameters not found: ' . implode(', ', $match[1]);
+            }
 
-		if (isset($args['data']))
-		{
-			$dataResult = RequestValidator::validateData($args['data'], $methodInfo);
-			return array_merge($result, $dataResult);
-		}
+            if (isset($result['_invalid']))
+            {
+                return $result;
+            }
+        }
 
-		return $result;
-	}
+        if (isset($args['data']))
+        {
+            $dataResult = RequestValidator::validateData($args['data'], $methodInfo);
+            return array_merge($result, $dataResult);
+        }
 
-	protected static function transformValueType($type) {
-		switch($type)
-		{
-			case 'integer':
-				return 'int';
-			case 'double':
-				return 'float';
-		}
-		return $type;
-	}
 
-	public static function validateData($args, $methodInfo)
-	{
-		$result = array('_valid' => array());
-		if (!is_array($methodInfo))
-		{
-			$result['_invalid'][] = 'Method not found';
-			return $result;
-		}
-		$methodsParams = $methodInfo['params'];
-		foreach ($args as $name => $arg)
-		{
-			if (isset($methodsParams[$name]))
-			{
-				$validType = $methodsParams[$name];
-				$type = self::transformValueType(gettype($arg));
+        return $result;
+    }
 
-				switch($type)
-				{
-					case 'array':
-						if (@array_key_exists('json', $arg) && json_decode($arg['json']) !== NULL) {
-							$type = 'json';
-							$arg = $arg['json'];
-							break;
-						}
+    protected static function transformValueType($type) {
+        switch($type)
+        {
+            case 'integer':
+                return 'int';
+            case 'double':
+                return 'float';
+        }
+        return $type;
+    }
 
-						if (count($arg) > 0)
-						{
-							if (preg_match('@^map\(@', $validType)) {
-								$valueTypes = array();
-								foreach ($arg as $value)
-								{
-									$valueTypes[] = self::transformValueType(gettype($value));
-								}
-								$type = 'map(' . implode($valueTypes, ', ') . ')';
-								break;
-							}
+    public static function validateData($args, $methodInfo)
+    {
+        $result = array('_valid' => array());
+        if (!is_array($methodInfo))
+        {
+            $result['_invalid'][] = 'Method not found';
+            return $result;
+        }
+        $methodsParams = $methodInfo['params'];
 
-							if (preg_match('/@.*?;type=.*?\/.+$/', @$arg[0]))
-							{
-								$type = 'imagefile';
-								$name = '@' . $name;
-								$arg = @$arg[0];
-							} else {
-								$item_type = self::transformValueType(@gettype($arg[0]));
-								if($item_type == 'string' && preg_match("/^[\s0-9,]+$/", $arg[0])) {  //is comma separated integer string
+        foreach ($args as $name => $arg)
+        {
+            if (isset($methodsParams[$name]))
+            {
+                $validType = $methodsParams[$name];
+                $type = self::transformValueType(gettype($arg));
+
+                switch($type)
+                {
+                    case 'array':
+                        if (@array_key_exists('json', $arg) && json_decode($arg['json']) !== NULL) {
+                            $type = 'json';
+                            $arg = json_decode($arg['json'],true);
+                            break;
+                        }
+
+                        if (count($arg) > 0)
+                        {
+                            if (preg_match('@^map\(@', $validType)) {
+                                $valueTypes = array();
+                                foreach ($arg as $value)
+                                {
+                                    $valueTypes[] = self::transformValueType(gettype($value));
+                                }
+                                $type = 'map(' . implode($valueTypes, ', ') . ')';
+                                break;
+                            }
+
+                            if (preg_match('/@.*?;type=.*?\/.+$/', @$arg[0]))
+                            {
+                                $image_file =  explode(';type', @$arg[0]);
+                                if (isset($image_file['0']) && $image_file['0']) {
+                                    $image_file['0'] = str_replace('@','', $image_file['0']);
+                                    @$arg[0] = $image_file['0'];
+                                }
+                                $type = 'imagefile';
+                                $name = '@' . $name;
+                                $arg = @$arg[0];
+                            } else {
+                                $item_type = self::transformValueType(@gettype($arg[0]));
+                                if($item_type == 'string' && preg_match("/^[\s0-9,]+$/", $arg[0])) {  //is comma separated integer string
                                     $item_type = 'int';
-								}
-								$type = 'array('.$item_type.')';
-							}
-						}
+                                }
+                                $type = 'array('.$item_type.')';
+                            }
+                        }
 
                         break;
-				}
+                }
 
                 if ($validType !== $type) {
                     if (substr($validType, 0, 4) === 'enum') {
@@ -130,21 +138,21 @@ class RequestValidator
                 } else {
                     $result['_valid'][$name] = $arg;
                 }
-			} else {
-				$result['_invalid'][] = RequestValidator::invalidParam($name, $arg, gettype($arg));
-			}
-		}
+            } else {
+                $result['_invalid'][] = RequestValidator::invalidParam($name, $arg, gettype($arg));
+            }
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public static function invalidParam($name, $value, $type)
-	{
-		return 'Unrecognized data param "'.$name.'" ('.$type.')';
-	}
+    public static function invalidParam($name, $value, $type)
+    {
+        return 'Unrecognized data param "'.$name.'" ('.$type.')';
+    }
 
-	public static function invalidParamType($name, $value, $type, $validType)
-	{
-		return 'Invalid data param type "'.$name.'" ('.(is_array($value) ? implode(', ', $value) : $value).': '.$type.'): required type "'.$validType.'"';
-	}
+    public static function invalidParamType($name, $value, $type, $validType)
+    {
+        return 'Invalid data param type "'.$name.'" ('.(is_array($value) ? implode(', ', $value) : $value).': '.$type.'): required type "'.$validType.'"';
+    }
 }

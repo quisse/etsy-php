@@ -110,7 +110,7 @@ class EtsyApi
 
 	private function prepareParameters($params) {
 		$query_pairs = array();
-		$allowed = array("limit", "offset", "page", "sort_on", "sort_order", "include_private", "language");
+		$allowed = array("limit", "offset", "page", "sort_on", "sort_order", "include_private", "language", "was_shipped");
 
 		if ($params) {
 			foreach($params as $key=>$value) {
