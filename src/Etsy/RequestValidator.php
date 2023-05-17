@@ -119,7 +119,7 @@ class RequestValidator
 
                 if ($validType !== $type) {
                     if (substr($validType, 0, 4) === 'enum') {
-                        if ($arg === 'enum' || !preg_match("@" . preg_quote($arg) . "@", $validType)) {
+                        if ($arg === 'enum' || !preg_match("@" . preg_quote((string)$arg) . "@", $validType)) {
                             $result['_invalid'][] = 'Invalid enum data param "' . $name . '" value (' . $arg . '): valid values "' . $validType . '"';
                         } else {
                             $result['_valid'][$name] = $arg;
