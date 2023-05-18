@@ -390,6 +390,7 @@
       "price": "float",
       "materials": "array(string)",
       "shipping_profile_id": "int",
+      "return_policy_id": "int",
       "shop_section_id": "int",
       "image_ids": "array(int)",
       "is_customizable": "boolean",
@@ -484,6 +485,7 @@
       "materials": "array(string)",
       "renew": "boolean",
       "shipping_profile_id": "int",
+      "return_policy_id": "int",
       "shop_section_id": "int",
       "state": "enum(active, inactive,draft)",
       "image_ids": "array(int)",
@@ -4579,5 +4581,57 @@
     "type": "Listing",
     "visibility": "public",
     "http_method": "GET"
+  },
+  "getShopReturnPolicies": {
+    "name": "getShopReturnPolicies",
+    "description": "Returns a shop's list of existing Return Policies.",
+    "uri": "/shops/:shop_id/policies/return",
+    "params": {
+      "shop_id": "int"
+    },
+    "type": "Shop Return Policy",
+    "visibility": "public",
+    "http_method": "GET"
+  },
+  "createShopReturnPolicy": {
+    "name": "createShopReturnPolicy",
+    "description": "Creates a new Return Policy. Note: if either accepts_returns or accepts_exchanges is true, then a return_deadline is required",
+    "uri": "/shops/:shop_id/policies/return",
+    "params": {
+      "shop_id": "int",
+      "accepts_returns": "boolean",
+      "accepts_exchanges": "boolean",
+      "return_deadline": "int"
+    },
+    "type": "Shop Return Policy",
+    "visibility": "public",
+    "http_method": "POST"
+  },
+  "updateShopReturnPolicy": {
+    "name": "updateShopReturnPolicy",
+    "description": "Updates an existing Return Policy",
+    "uri": "/shops/:shop_id/policies/return/:return_policy_id",
+    "params": {
+      "shop_id": "int",
+      "return_policy_id": "int",
+      "accepts_returns": "boolean",
+      "accepts_exchanges": "boolean",
+      "return_deadline": "int"
+    },
+    "type": "Shop Return Policy",
+    "visibility": "public",
+    "http_method": "PUT"
+  },
+  "deleteShopReturnPolicy": {
+    "name": "deleteShopReturnPolicy",
+    "description": "Deletes an existing Return Policy",
+    "uri": "/shops/:shop_id/policies/return/:return_policy_id",
+    "params": {
+      "shop_id": "int",
+      "return_policy_id": "int"
+    },
+    "type": "Shop Return Policy",
+    "visibility": "public",
+    "http_method": "DELETE"
   }
 }
