@@ -1,6 +1,6 @@
 {
     "name": "cedcommerce/etsy-php",
-    "version": "3.0.3",
+    "version": "3.0.4",
     "description": "Etsy API SDK For V3",
     "license": "MIT",
     "require": {
