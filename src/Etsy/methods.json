@@ -2752,6 +2752,22 @@
     "visibility": "private",
     "http_method": "POST"
   },
+  "updateShopReceipt": {
+    "name": "updateShopReceipt",
+    "description": "Update information for a Shop Receipt, which creates a Shop Receipt Shipment entry for the given receipt_id.",
+    "uri": "/shops/:shop_id/receipts/:receipt_id",
+    "params": {
+      "was_shipped": "boolean",
+      "was_paid": "boolean"
+    },
+    "defaults": {
+      "was_shipped": null,
+      "was_paid": null
+    },
+    "type": "Receipt",
+    "visibility": "private",
+    "http_method": "PUT"
+  },
   "findAllShopReceiptsByStatus": {
     "name": "findAllShopReceiptsByStatus",
     "description": "Retrieves a set of Receipt objects associated to a Shop based on the status.",
