@@ -610,12 +610,14 @@
       "property_id": "int",
       "value_ids": "array(int)",
       "values": "array(string)",
-      "scale_id": "int"
+      "scale_id": "int",
+      "scale_name": "string"
     },
     "defaults": {
       "value_ids": null,
       "values": null,
-      "scale_id": null
+      "scale_id": null,
+      "scale_name": null
     },
     "type": "PropertyValue",
     "visibility": "private",
