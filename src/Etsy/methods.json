@@ -780,26 +780,6 @@
     "visibility": "public",
     "http_method": "GET"
   },
-  "updateInventory": {
-    "name": "updateInventory",
-    "description": "Update the inventory for a listing [developer preview - may be unstable]",
-    "uri": "/listings/:listing_id/inventory",
-    "params": {
-      "listing_id": "int",
-      "products": "stringJSON",
-      "price_on_property": "array(int)",
-      "quantity_on_property": "array(int)",
-      "sku_on_property": "array(int)"
-    },
-    "defaults": {
-      "price_on_property": null,
-      "quantity_on_property": null,
-      "sku_on_property": null
-    },
-    "type": "ListingInventory",
-    "visibility": "private",
-    "http_method": "PUT"
-  },
   "getProduct": {
     "name": "getProduct",
     "description": "Get a specific offering for a listing [developer preview - may be unstable]",
