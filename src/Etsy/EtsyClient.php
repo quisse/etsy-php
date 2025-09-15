@@ -40,7 +40,7 @@ class EtsyClient
 	    try {
             $client = new Client();
             $content_type = 'application/json';
-            if (($method == 'POST') || ($method == 'PUT')) {
+            if ((($method == 'POST') || ($method == 'PUT') || ($method == 'PATCH')) && strtolower($method) !== strtolower('updateListingInventory')) {
                 $content_type = 'application/x-www-form-urlencoded';
             }
             $valid_methods = ['get', 'delete', 'patch', 'post', 'put'];
