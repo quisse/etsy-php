@@ -560,7 +560,7 @@
     },
     "type": "Listing",
     "visibility": "private",
-    "http_method": "PUT"
+    "http_method": "PATCH"
   },
   "deleteListing": {
     "name": "deleteListing",
